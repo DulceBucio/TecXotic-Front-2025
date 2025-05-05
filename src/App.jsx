@@ -1,11 +1,11 @@
 import './App.css'
-import Copilot from './Pages/Copilot/Copilot'
+import Views from './Components/Views'
 
 function App() {
 
   return (
     <>
-      <Copilot/>
+      <Views/>
     </>
   )
 }

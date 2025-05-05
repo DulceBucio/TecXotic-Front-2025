@@ -4,9 +4,12 @@ import './index.css'
 import App from './App.jsx'
 import './assets/fonts/RobotoMono-Light.ttf'
 import './assets/fonts/RobotoMono-Regular.ttf'
+import { BrowserRouter } from 'react-router-dom'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <App/>
+    </BrowserRouter>
   </StrictMode>,
 )
