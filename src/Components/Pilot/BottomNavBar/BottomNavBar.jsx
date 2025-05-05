@@ -3,6 +3,7 @@ import WIFI from '../../../assets/Wifi.svg'
 import CONTROL from '../../../assets/control.svg'
 import TAKEPHOTO from '../../../assets/takePhoto.svg'
 import PAUSE from '../../../assets/pause.svg'
+import RECORD from '../../../assets/record.svg'
 import "./BottomNavBar.css"
 const BottomNavBar =({option,setOption}) => { 
     const [record,setRecord] = useState(0);
@@ -33,7 +34,7 @@ const BottomNavBar =({option,setOption}) => {
                         )
                     }
                 </p>
-                <img src={PAUSE}/>
+                <img src={record === 0 ? RECORD : PAUSE}/>
             </button>
             
             <button className='button-text-icon'>
