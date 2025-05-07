@@ -1,0 +1,1 @@
+export const flask_address = "http://192.168.5.1:8080"
