@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import Icon from '../../../assets/Icon.svg'
 import TecXotic from '../../../assets/TecXotic.svg'
 import './buttons.css'
-const Buttons =({option,setOption}) => { 
-  const [speed, setSpeed] = useState(0);
+const Buttons =({ option, setOption, getSliderValue, onChange }) => { 
+    const [speed, setSpeed] = useState(100);
     return (
     <>
     <div className='navbar-background'> 
@@ -27,10 +27,17 @@ const Buttons =({option,setOption}) => {
             SPEED: <span style={{ display: 'inline-block', minWidth: '3ch', textAlign: 'right' }}>{speed}</span>
             </p>
             <input 
-                onChange={(e) => setSpeed(Number(e.target.value))}
+                type='range'
                 min={0}
                 max={300}
-                type='range'></input>
+                value={speed}
+                onChange={(e) => {
+                    const newSpeed = Number(e.target.value);
+                    setSpeed(newSpeed);
+                    getSliderValue?.(newSpeed);
+                    onChange?.(newSpeed);
+                }}
+            />
         </div>
         }
         {option === 1  &&  

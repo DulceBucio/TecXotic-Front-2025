@@ -4,8 +4,9 @@ import CONTROL from '../../../assets/control.svg'
 import TAKEPHOTO from '../../../assets/takePhoto.svg'
 import PAUSE from '../../../assets/pause.svg'
 import RECORD from '../../../assets/record.svg'
+import Crosshair from '../CrossHair/CrossHair';
 import "./BottomNavBar.css"
-const BottomNavBar =({option,setOption}) => { 
+const BottomNavBar =({rotation, roll, pitch, yaw}) => { 
     const [record,setRecord] = useState(0);
 
     return (
@@ -19,21 +20,20 @@ const BottomNavBar =({option,setOption}) => {
                 <img src={CONTROL}/>
             </button>
             
-            <p className='button-icon'>PITCH 0°</p>
-            <p>Balanceador</p>
-            <p className='button-icon'>YAW 0°</p>
+            <p className='button-icon'>PITCH: {pitch}°</p>
+
+            <p className='button-icon'>ROLL: {roll}°</p>
+            <Crosshair rotation={rotation} />
+            
+            <p className='button-icon'>YAW: {yaw}°</p>
             
             <button className='button-text-icon' onClick={() => setRecord(record === 0 ? 1 : 0)}>
-                <p>
-                    {record === 0 ? 
-                        (   
-                            <p>Record</p>   
-                        ) : 
-                        (   
-                            <p>Stop <br/> Recording</p>
-                        )
-                    }
-                </p>
+                <div>
+                {record === 0 ? 
+                    "Record" : 
+                    <>Stop<br/>Recording</>
+                }
+                </div>
                 <img src={record === 0 ? RECORD : PAUSE}/>
             </button>
             

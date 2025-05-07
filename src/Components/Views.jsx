@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import Home from '../Pages/Pilot/Home/Home'
+import Home from './Pilot/PilotContainer/PilotContainer'
 import Copilot from "../Pages/Copilot/Copilot";
 const Views = () => {
   return (

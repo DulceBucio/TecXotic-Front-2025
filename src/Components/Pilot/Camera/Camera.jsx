@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './camera.css'
-import CAMERA1 from '../../../assets/camera1.svg'
-import CAMERA2 from '../../../assets/camera2.svg'
+
 import CameraProp from '../CameraProp/CameraProp';
 import { flask_address } from '../../Constants';
 
