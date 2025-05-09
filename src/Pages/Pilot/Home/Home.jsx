@@ -22,6 +22,8 @@ const Home = () => {
   const [powerLimit, setPowerLimit] = useState(1.0);
   const powerLimitRef = useRef();
   powerLimitRef.current = powerLimit;
+  const isPostingRef = useRef(false);
+
   
   const stoppedRef = useRef(true);
 
@@ -37,21 +39,52 @@ const Home = () => {
     return Math.min(1000, Math.max(0, parseInt(result)));
   };
 
-  const post_commands_instance = async (action) => {
-    const response = await fetch(`${apiURL}/actuators`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        actions: action,
-      }),
-    });
-
-    if (!response.ok) {
-      console.error("Error sending commands:", response.statusText);
+  const post_commands_instancestop = async (action) => {
+    // if (isPostingRef.current) return; // Skip if a request is on
+  
+    isPostingRef.current = true; // Lock the request
+    try {
+      const response = await fetch(`${apiURL}/actuators`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ actions: action }),
+      });
+  
+      if (!response.ok) {
+        console.error("Error sending commands:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error in post_commands_instance:", error);
+    } finally {
+      isPostingRef.current = false; // Unlock after done
     }
   };
+
+  const post_commands_instance = async (action) => {
+    if (isPostingRef.current) return; // Skip if a request is ongoing
+  
+    isPostingRef.current = true; // Lock the request
+    try {
+      const response = await fetch(`${apiURL}/actuators`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ actions: action }),
+      });
+  
+      if (!response.ok) {
+        console.error("Error sending commands:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error in post_commands_instance:", error);
+    } finally {
+      isPostingRef.current = false; // Unlock after done
+    }
+  };
+  
 
   let yawInput = 0;
 
@@ -160,7 +193,7 @@ const Home = () => {
           if (!stoppedRef.current) {
             stoppedRef.current = true;
             try {
-              post_commands_instance("STOP");
+              post_commands_instancestop("STOP");
             } catch (error) {
               console.error("Error in post_commands_instance:", error);
             }
