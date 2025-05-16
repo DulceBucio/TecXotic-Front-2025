@@ -2,10 +2,10 @@ import NavBar from "../../../Components/Pilot/Navbar/Navbar";
 import Camera from "../../../Components/Pilot/Camera/Camera";
 import BottomNavBar from "../../../Components/Pilot/BottomNavBar/BottomNavBar";
 import "./Home.css";
-import { web_socket_address } from "../../../Components/Constants";
+import { web_socket_address, flask_address } from "../../../Components/Constants";
 import { useEffect, useState, useRef } from "react";
 
-const RANGE = 1000,
+const RANGE = 900,
 NEUTRAL = 0;
 const THROTTLE_RANGE = 500,
 NEUTRAL_THROTTLE = 500;
@@ -125,18 +125,24 @@ const Home = () => {
       if (controller) {
         const safeZone = 0.012;
 
-        // lx for roll, ly for pitch
-        const lx = controller.axes[0];
+        // rx for roll, ry + ly for pitch 
+        const rx = controller.axes[2];
+        const ry = controller.axes[3];
         const ly = controller.axes[1];
 
+        
         // triggers for throttle
         const lt = controller.buttons[6].value;
         const rt = controller.buttons[7].value;
 
+        if (Math.abs(ry) > safeZone) {
+          commands_pitch = calculatePotency(-ry);
+        } 
+
         commands_pitch =
-          ly > safeZone || ly < -safeZone ? calculatePotency(-ly) : NEUTRAL;
+          ry > safeZone || ry < -safeZone ? calculatePotency(-ry) : NEUTRAL;
         commands_roll =
-          lx > safeZone || lx < -safeZone ? calculatePotency(lx) : NEUTRAL;
+          rx > safeZone || rx < -safeZone ? calculatePotency(rx) : NEUTRAL;
 
         const throttleInput = rt - lt; // RT increases, LT decreases
         commands_throttle =
@@ -148,10 +154,10 @@ const Home = () => {
 
         // Simple digital bumpers
         if (controller.buttons[4].pressed) {
-          yawInput -= 1;
+          yawInput += 1;
         }
         if (controller.buttons[5].pressed) {
-          yawInput += 1;
+          yawInput -= 1;
         }
 
         commands_yaw = yawInput !== 0 ? calculatePotency(yawInput) : NEUTRAL;
