@@ -3,9 +3,12 @@ import Camera from "../Camera/Camera";
 import BottomNavBar from "../BottomNavBar/BottomNavBar"
 import "./PilotContainer.css"
 import React, { useState , useEffect, useRef} from "react";
-import { socket_address} from "../../Constants";
-const RANGE=1000, NEUTRAL = 0
-const THROTTLE_RANGE=500, NEUTRAL_THROTTLE = 500
+import { socket_address, flask_address } from "../../Constants";
+
+const RANGE = 900,
+NEUTRAL = 0;
+const THROTTLE_RANGE = 500,
+NEUTRAL_THROTTLE = 500;
 
 function scale(number, inMin, inMax, outMin, outMax) {
     return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
@@ -13,147 +16,204 @@ function scale(number, inMin, inMax, outMin, outMax) {
 
 const  PilotContainer = (props) => {
 
-    const [ws, setWs] = useState(null);
-    const [activeCamera, setActiveCamera] = useState(1);
+    const [websocket, setWebsocket] = useState(null);
+    // const [activeCamera, setActiveCamera] = useState(1);
     const [rotation, setRotation] = useState(props.rotation);
     const [pitch, setPitch] = useState(props.pitch);
     const [yaw, setYaw] = useState(props.yaw);
-    const wifiStatus = useRef(false);
+    // const wifiStatus = useRef(false);
     const gamepadStatus = useRef(false);
-    const flagStatus = useRef(false);
-    const gearStatus = useRef(false);
-    const [connections, setConnections] = useState([wifiStatus.current, gamepadStatus.current, flagStatus.current, gearStatus.current]);
+    // const flagStatus = useRef(false);
+    // const gearStatus = useRef(false);
+    // const [connections, setConnections] = useState([wifiStatus.current, gamepadStatus.current, flagStatus.current, gearStatus.current]);
     const [powerLimit, setPowerLimit] = useState(1.0);
     const powerLimitRef = useRef();
     powerLimitRef.current = powerLimit;
+    const isPostingRef = useRef(false)
+    const stoppedRef = useRef(true)
     const [counter, setCounter] = useState(0);
 
     let modes = 'MANUAL';
 
-    const calculatePotency = (joystick, trigger) =>{
-        const tempPowerLimit = trigger ? powerLimitRef.current : 1.0;
-        return parseInt(joystick * RANGE * tempPowerLimit);
-    }
+    const calculatePotency = (joystick) => {
+        return parseInt(joystick * RANGE * powerLimitRef.current);
+      };
+    
+    const calculateThrottlePotency = (input) => {
+        const result =
+          input * THROTTLE_RANGE * powerLimitRef.current + NEUTRAL_THROTTLE;
+        return Math.min(1000, Math.max(0, parseInt(result)));
+    };
 
-    const calculateThrottlePotency = (joystick, trigger) =>{
-        const tempPowerLimit = trigger ? powerLimitRef.current : 1.0;
-        return parseInt((-joystick * THROTTLE_RANGE) * tempPowerLimit + NEUTRAL_THROTTLE);
-    }
+    const post_commands_instancestop = async (action) => {
+        // if (isPostingRef.current) return; // Skip if a request is on
+      
+        isPostingRef.current = true; // Lock the request
+        try {
+          const response = await fetch(`${flask_address}/actuators`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ actions: action }),
+          });
+      
+          if (!response.ok) {
+            console.error("Error sending commands:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error in post_commands_instance:", error);
+        } finally {
+          isPostingRef.current = false; // Unlock after done
+        }
+    };
+
+    const post_commands_instance = async (action) => {
+        if (isPostingRef.current) return; // Skip if a request is ongoing
+      
+        isPostingRef.current = true; // Lock the request
+        try {
+          const response = await fetch(`${flask_address}/actuators`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ actions: action }),
+          });
+      
+          if (!response.ok) {
+            console.error("Error sending commands:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error in post_commands_instance:", error);
+        } finally {
+          isPostingRef.current = false; // Unlock after done
+        }
+    };
+
+    let yawInput = 0;
 
     useEffect(() => {
-        if(counter===0){
-            const wsClient = new WebSocket(socket_address);
-
-            wsClient.onopen = () => {
-                setWs(wsClient);
-                const start_commands_instance = {
-                    throttle: 500,
-                    roll: 0,
-                    pitch: 0,
-                    yaw: 0,
-                    arm_disarm: true,
-                    mode: 'MANUAL',
-                    arduino: 0,
-                }
-                ws.send(JSON.stringify(start_commands_instance));
-                setCounter(counter+1);
+        if (counter === 0) {
+          const wsClient = new WebSocket(socket_address);
+    
+          wsClient.onopen = () => {
+            setWebsocket(wsClient);
+            const start_commands_instance = {
+              throttle: 500,
+              roll: 0,
+              pitch: 0,
+              yaw: 0,
+              arm_disarm: true,
+              mode: "MANUAL",
             };
+            wsClient.send(JSON.stringify(start_commands_instance));
+            setWebsocket(wsClient);
+          };
         }
-        
-    })
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
+            const gamepads = navigator.getGamepads();
+            const controller = gamepads[0];
 
             let commands_yaw = 0;
             let commands_pitch = 0;
             let commands_roll = 0;
             let commands_throttle = 500;
-            let commands_arduino = 0;
-            let commands_mode = 'MANUAL';
+            let commands_mode = "MANUAL";
 
-            const gamepads = navigator.getGamepads();
-            if (gamepads && gamepads[0]) {
+            if (controller) {
                 gamepadStatus.current = true;
                 const safeZone = 0.012;
-                let trigger = false;
-                if(gamepads[0].buttons[4].pressed || gamepads[0].buttons[5].pressed){
-                    //LB or RB
-                    trigger = true;
+
+                // rx for roll, ry + ly for pitch 
+                const rx = controller.axes[2];
+                const ry = controller.axes[3];
+                const ly = controller.axes[1];
+
+                // triggers for throttle
+                const lt = controller.buttons[6].value;
+                const rt = controller.buttons[7].value;
+
+                if (Math.abs(ry) > safeZone) {
+                    commands_pitch = calculatePotency(-ry);
                 }
 
-                const lx = gamepads[0].axes[0];
-                const ly = gamepads[0].axes[1];
+                commands_pitch =
+                    ry > safeZone || ry < -safeZone ? calculatePotency(-ry) : NEUTRAL;
+                commands_roll =
+                    rx > safeZone || rx < -safeZone ? calculatePotency(rx) : NEUTRAL;
 
-                const rx = gamepads[0].axes[2];
-                const ry = gamepads[0].axes[3];
+                const throttleInput = rt - lt; // RT increases, LT decreases
+                commands_throttle =
+                    Math.abs(throttleInput) > safeZone
+                        ? calculateThrottlePotency(throttleInput)
+                        : NEUTRAL_THROTTLE;
 
-                commands_yaw = ( rx > safeZone || rx < -safeZone) ? parseInt(calculatePotency(rx, trigger)): NEUTRAL
-                commands_pitch = ( ly > safeZone || ly < -safeZone) ? calculatePotency(-ly, trigger): NEUTRAL
-                commands_roll = (lx > safeZone || lx < -safeZone) ? calculatePotency(lx, trigger): NEUTRAL
-                setYaw(scale(rx, -1, 1, 180, 0).toFixed());
+                let yawInput = 0;
+
+                // Simple digital bumpers
+                if (controller.buttons[4].pressed) {
+                    yawInput += 1;
+                }
+                if (controller.buttons[5].pressed) {
+                    yawInput -= 1;
+                }
+                
+                commands_yaw = yawInput !== 0 ? calculatePotency(yawInput) : NEUTRAL;
+
+                setYaw(scale(yawInput, -1, 1, 180, 0).toFixed());
                 setPitch(scale(ly, -1, 1, 180, 0).toFixed());
-                setRotation(scale(lx, -1, 1, 180, 0).toFixed());
+                setRotation(scale(rx, -1, 1, 180, 0).toFixed());
 
-                if (gamepads[0].buttons[0].pressed) {
-                    //x
-                    commands_arduino = 1;
-                }
-                else if (gamepads[0].buttons[1].pressed) {
-                    //circle
-                    commands_arduino = 4;
-                }
-                else if (gamepads[0].buttons[2].pressed) {
-                    //square
-                    commands_arduino = 3;
-                }
-                else if (gamepads[0].buttons[3].pressed) {
-                    //triangle
-                    commands_arduino = 2;
-                }
-                else if (gamepads[0].buttons[6].pressed) {
-                    //LT
-                    commands_arduino = 7;
-                }
-                else if (gamepads[0].buttons[7].pressed) {
-                    //RT
-                    commands_arduino = 6;
-                }
-                else{
-                    commands_arduino = 0;
-                }
+                if (controller.buttons[3].pressed) commands_mode = "MANUAL";
+                else if (controller.buttons[1].pressed) commands_mode = "STABILIZE";
+                else if (controller.buttons[0].pressed) commands_mode = "ACRO";
 
-                if(gamepads[0].buttons[11].pressed){
-                    //right joystick button
-                    commands_arduino = 5;
-                }
-
-                if(ry > safeZone || ry < -safeZone){
-                    commands_throttle = calculateThrottlePotency(ry, trigger)
-                }
-                else{
-                    commands_throttle = NEUTRAL_THROTTLE;
-                }
-
-                if (gamepads[0].buttons[14].pressed){
-                    //left
-                    modes = 'MANUAL';
-                }
-                else if( gamepads[0].buttons[12].pressed){
-                    //up
-                    modes = 'STABILIZE';
-                }
-                else if(gamepads[0].buttons[13].pressed){
-                    //down
-                    modes = 'ACRO';
-                }
-                commands_mode = modes;
+                if (controller.buttons[12].pressed) {
+                    stoppedRef.current = false;
+                    try {
+                      post_commands_instance("CLAW_OPEN");
+                    } catch (error) {
+                      console.error("Error in post_commands_instance:", error);
+                    }
+                } else if (controller.buttons[13].pressed) {
+                    stoppedRef.current = false;
+                    try {
+                      post_commands_instance("CLAW_CLOSE");
+                    } catch (error) {
+                      console.error("Error in post_commands_instance:", error);
+                    }
+                } else if (controller.buttons[14].pressed) {
+                    stoppedRef.current = false;
+                    try {
+                      post_commands_instance("LEFTROLL");
+                    } catch (error) {
+                      console.error("Error in post_commands_instance:", error);
+                    }
+                } else if (controller.buttons[15].pressed) {
+                    stoppedRef.current = false;
+                    try {
+                      post_commands_instance("RIGHTROLL");
+                    } catch (error) {
+                      console.error("Error in post_commands_instance:", error);
+                    }
+                } 
+                else {
+                    if(!stoppedRef.current) {
+                        stoppedRef.current = true
+                        try {
+                            post_commands_instancestop("STOP")
+                        } catch (error) {
+                            console.error("Error in post_commands_instance:", error)
+                        }
+                    }
+                }                
             }
-            /*else{
-                gamepadStatus.current = false;
-            }*/
-            if(ws !== null){
-                ws.onmessage = (event) => {
+            if(websocket !== null){
+                websocket.onmessage = (event) => {
                     const commands_instance = {
                         throttle: commands_throttle,
                         roll: commands_roll,
@@ -161,12 +221,10 @@ const  PilotContainer = (props) => {
                         yaw: commands_yaw,
                         arm_disarm: true,
                         mode: commands_mode,
-                        arduino: commands_arduino,
                     }
-                    ws.send(JSON.stringify(commands_instance))
+                    websocket.send(JSON.stringify(commands_instance))
                 }
             }
-            //setConnections([wifiStatus.current, gamepadStatus.current, flagStatus.current, gearStatus.current])
         }, 4);
     })
 
@@ -178,7 +236,7 @@ const  PilotContainer = (props) => {
     return (
         <div className="Background-home">
             <NavBar getSliderValue={getSliderValue}/>
-            <Camera  />
+            <Camera />
             <BottomNavBar rotation={rotation} roll={rotation} pitch={pitch} yaw={yaw}/>
         </div>
     )
