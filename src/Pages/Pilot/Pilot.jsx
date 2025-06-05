@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import PilotContainer from "../../Components/Pilot/PilotContainer/PilotContainer";
 //import { socket_address } from "../../Constants";

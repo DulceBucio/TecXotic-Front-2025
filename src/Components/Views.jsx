@@ -4,8 +4,8 @@ import Copilot from "../Pages/Copilot/Copilot";
 const Views = () => {
   return (
     <Routes>
-        <Route path = "/" element={<Copilot/>}></Route>
-        <Route path = "/Piloto" element={<Home/>}></Route>
+        <Route path = "/Copilot" element={<Copilot/>}></Route>
+        <Route path = "/Pilot" element={<Home/>}></Route>
     </Routes>
   )
 }

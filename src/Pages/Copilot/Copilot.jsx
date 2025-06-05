@@ -1,11 +1,9 @@
-import CopilotHeader from "../../Components/CopilotHeader/CopilotHeader";
-import CopilotMenu from "../../Components/CopilotMenu/CopilotMenu";
+import CopilotContainer from "../../Components/Copilot/CopilotContainer/CopilotContainer";
 
 export default function Copilot(){
     return(
         <>
-        <CopilotMenu />
-        <CopilotHeader />
+            <CopilotContainer />
         </>
     )
 }

@@ -235,7 +235,7 @@ const  PilotContainer = (props) => {
 
     return (
         <div className="Background-home">
-            <NavBar getSliderValue={getSliderValue}/>
+            <NavBar pilot={true} getSliderValue={getSliderValue}/>
             <Camera />
             <BottomNavBar rotation={rotation} roll={rotation} pitch={pitch} yaw={yaw}/>
         </div>
