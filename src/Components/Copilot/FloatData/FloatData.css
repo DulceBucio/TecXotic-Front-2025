@@ -1,0 +1,17 @@
+.float-data-container {
+    background-color:  #1E646E;
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+h1 {
+    font-family: "RobotoMonoRegular";
+    color: #FFFFFF;
+    text-align: center;
+}
+
+.header-container {
+    width: 100%;
+}
+

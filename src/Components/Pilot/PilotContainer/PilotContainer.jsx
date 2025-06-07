@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import NavBar from "../Navbar/Navbar";
 import Camera from "../Camera/Camera";
 import BottomNavBar from "../BottomNavBar/BottomNavBar"
@@ -229,9 +230,10 @@ const  PilotContainer = (props) => {
     })
 
     const getSliderValue = (element) => {
-        setPowerLimit(element /100.0);
+        const newPower = element / 100.0;
+        console.log('Setting power limit:', newPower); // Debug line
+        setPowerLimit(newPower);
     }
-
 
     return (
         <div className="Background-home">

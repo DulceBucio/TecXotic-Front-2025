@@ -1,0 +1,12 @@
+.content {
+    display: flex;
+    height: 100vh;
+}
+
+.cameras-container {
+    width: 70%;
+}
+
+.float-data {
+    flex: 1;
+}
