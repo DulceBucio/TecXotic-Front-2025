@@ -15,11 +15,11 @@ const DNA = () => {
             <div className='action-container'>
                 {enterText && (
                     <div className='input-row'>
-                        <input
-                            type="text"
-                            placeholder="DNA Sequence"
-                            className="text-input"
-                        />
+                        <textarea
+                        type="text"
+                        placeholder="DNA Sequence"
+                        className="text-input"
+                        ></textarea>
                         <button className='send-button'>Analyze</button>
                     </div>
                 )}
