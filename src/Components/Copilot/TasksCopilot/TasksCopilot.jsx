@@ -2,6 +2,7 @@ import React from "react";
 import './TasksCopilot.css'
 import TecXotic from '../../../assets/TecXotic.svg'
 import Icon from '../../../assets/Icon.svg'
+import DNA from "../eDNA/DNA";
 
 const TasksCopilot = ({ option, setOption }) => {
     return (
@@ -28,13 +29,13 @@ const TasksCopilot = ({ option, setOption }) => {
             </div>
             <div className='settings-background'>
                 {option === 0 && 
-                <div className='settings-input-range'>
+                <div className="task-container">
                     <p>a</p>
                 </div>
                 }
                 {option === 1 && 
-                <div className='settings-input-range'>
-                    <p>b</p>
+                <div className="task-container">
+                    <DNA />
                 </div>
                 }
             </div>
