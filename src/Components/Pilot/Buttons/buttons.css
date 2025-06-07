@@ -28,8 +28,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  width: 80%;
-  justify-content: space-between;
   align-items: flex-start;
 }
 
@@ -43,7 +41,6 @@
   flex-direction: column;
   flex: 1 1 200px; 
   min-width: 250px; 
-  max-width: 400px;
   box-sizing: border-box;
 }
 .controls-input-range p {
@@ -88,23 +85,26 @@
   justify-content: center;
   margin-right: 20px;
 }
-.button-text-icon {
-  display: flex;
-  justify-content: center;
-  text-align: center;
-  align-items: center;
-  background-color: #7dbfc8;
-  border: None;
-  padding: 10px;
-  font-weight: bold;
+.brightness-wrapper {
+  position: relative;
+  padding: 20px;
+  border: 2px dashed white;
+  border-radius: 12px;
+  margin-top: 10px;
+  box-sizing: border-box;
+}
+
+.brightness-label {
+  position: absolute;
+  top: -14px;
+  left: 20px;
+  background-color: #1e646e;
   color: white;
-  border-radius: 8px;
-  filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.3));
-  cursor: pointer;
+  padding: 0 10px;
+  font-weight: bold;
+  font-size: 14px;
 }
-.button-text-icon p {
-  margin-right: 10px;
-}
+
 @media (max-width: 500px) {
   .icons {
     display: None;
