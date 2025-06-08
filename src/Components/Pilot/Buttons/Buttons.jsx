@@ -12,8 +12,8 @@ const Buttons = ({
   onChange,
 }) => {
   const [speed, setSpeed] = useState(100);
-  const [alpha, setAlpha] = useState(100);
-  const [beta, setBeta] = useState(100);
+  const [alpha, setAlpha] = useState(60);
+  const [beta, setBeta] = useState(60);
   return (
     <>
       <div className="navbar-background">
@@ -85,7 +85,7 @@ const Buttons = ({
                 <input
                   type="range"
                   min={0}
-                  max={300}
+                  max={200}
                   value={alpha}
                   onChange={(e) => {
                     const newAlpha = Number(e.target.value);
@@ -111,7 +111,7 @@ const Buttons = ({
                 <input
                   type="range"
                   min={0}
-                  max={300}
+                  max={150}
                   value={beta}
                   onChange={(e) => {
                     const newBeta = Number(e.target.value);

@@ -10,6 +10,7 @@ const RANGE = 900,
   NEUTRAL = 0;
 const THROTTLE_RANGE = 500,
   NEUTRAL_THROTTLE = 500;
+const TIME_BETWEEN_POSTS_BRIGHTNESS = 200; // ms (miliseconds)
 
 function scale(number, inMin, inMax, outMin, outMax) {
   return ((number - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
@@ -31,6 +32,8 @@ const PilotContainer = (props) => {
   powerLimitRef.current = powerLimit;
   const isPostingRef = useRef(false);
   const stoppedRef = useRef(true);
+  const alphaTimeoutRef = useRef(null);
+  const betaTimeoutRef = useRef(null);
   const [counter, setCounter] = useState(0);
 
   let modes = "MANUAL";
@@ -88,6 +91,44 @@ const PilotContainer = (props) => {
       console.error("Error in post_commands_instance:", error);
     } finally {
       isPostingRef.current = false; // Unlock after done
+    }
+  };
+
+  const post_brightness_alpha = async (alpha) => {
+    try {
+      const response = await fetch(`${flask_address}/alpha`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ alpha }),
+      });
+
+      if (!response.ok) {
+        console.error("Error sending alpha:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error in post_brightness_alpha:", error);
+    } finally {
+    }
+  };
+
+  const post_brightness_beta = async (beta) => {
+    try {
+      const response = await fetch(`${flask_address}/beta`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ beta }),
+      });
+
+      if (!response.ok) {
+        console.error("Error sending beta:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error in post_brightness_beta:", error);
+    } finally {
     }
   };
 
@@ -236,11 +277,27 @@ const PilotContainer = (props) => {
   const getAlphaValue = (element) => {
     const newAlpha = element;
     console.log("Brightness Alpha: ", newAlpha);
+
+    if (alphaTimeoutRef.current) {
+      clearTimeout(alphaTimeoutRef.current);
+    }
+
+    alphaTimeoutRef.current = setTimeout(() => {
+      post_brightness_alpha(newAlpha);
+    }, TIME_BETWEEN_POSTS_BRIGHTNESS);
   };
 
   const getBetaValue = (element) => {
     const newBeta = element;
     console.log("Brightness Beta: ", newBeta);
+
+    if (betaTimeoutRef.current) {
+      clearTimeout(betaTimeoutRef.current);
+    }
+
+    betaTimeoutRef.current = setTimeout(() => {
+      post_brightness_beta(newBeta);
+    }, TIME_BETWEEN_POSTS_BRIGHTNESS);
   };
 
   return (
