@@ -7,7 +7,7 @@ import RECORD from '../../../assets/record.svg'
 import Crosshair from '../CrossHair/CrossHair';
 import "./BottomNavBar.css"
 import { flask_address } from '../../Constants';
-const BottomNavBar =({rotation, roll, pitch, yaw}) => { 
+const BottomNavBar =({rotation, roll, pitch, yaw, gamepadStatus, wifiStatus}) => { 
 
     const TakePhoto = async (camera) => {
         try {
@@ -34,15 +34,16 @@ const BottomNavBar =({rotation, roll, pitch, yaw}) => {
             console.error('Error taking photo...', error)
         }
     };
+
     return (
         <div className='Background-Bottom-Navbar'>
             
             <button className='button-icon'>
-                <img src={WIFI}/>
+                <img src={WIFI} className={wifiStatus ? 'icon-on' : 'icon-off'}/>
             </button>
             
             <button className='button-icon'> 
-                <img src={CONTROL}/>
+                <img src={CONTROL} className={gamepadStatus ? 'icon-on' : 'icon-off'}/>
             </button>
             
             <p className='button-icon'>PITCH: {pitch}°</p>
