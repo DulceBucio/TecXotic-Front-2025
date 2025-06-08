@@ -22,8 +22,8 @@ const PilotContainer = (props) => {
   const [rotation, setRotation] = useState(props.rotation);
   const [pitch, setPitch] = useState(props.pitch);
   const [yaw, setYaw] = useState(props.yaw);
-  // const wifiStatus = useRef(false);
-  const gamepadStatus = useRef(false);
+  const [wifiStatus, setWifiStatus] = useState(false);
+  const [gamepadStatus, setGamepadStatus] = useState(false);
   // const flagStatus = useRef(false);
   // const gearStatus = useRef(false);
   // const [connections, setConnections] = useState([wifiStatus.current, gamepadStatus.current, flagStatus.current, gearStatus.current]);
@@ -140,6 +140,7 @@ const PilotContainer = (props) => {
 
       wsClient.onopen = () => {
         setWebsocket(wsClient);
+        if(!wifiStatus) setWifiStatus(true)
         const start_commands_instance = {
           throttle: 500,
           roll: 0,
@@ -166,7 +167,7 @@ const PilotContainer = (props) => {
       let commands_mode = "MANUAL";
 
       if (controller) {
-        gamepadStatus.current = true;
+        if (!gamepadStatus) setGamepadStatus(true);
         const safeZone = 0.012;
 
         // rx for roll, ry + ly for pitch
@@ -314,6 +315,8 @@ const PilotContainer = (props) => {
         roll={rotation}
         pitch={pitch}
         yaw={yaw}
+        gamepadStatus={gamepadStatus}
+        wifiStatus={wifiStatus}
       />
     </div>
   );
