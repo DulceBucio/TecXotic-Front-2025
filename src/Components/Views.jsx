@@ -5,7 +5,7 @@ const Views = () => {
   return (
     <Routes>
         <Route path = "/Copilot" element={<Copilot/>}></Route>
-        <Route path = "/Pilot" element={<Home/>}></Route>
+        <Route path = "/" element={<Home/>}></Route>
     </Routes>
   )
 }

@@ -1,4 +1,6 @@
 .float-data-container {
+    display: flex;
+    flex-direction: column;
     background-color:  #1E646E;
     display: flex;
     height: 100%;
@@ -15,3 +17,77 @@ h1 {
     width: 100%;
 }
 
+.views-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-self: center;
+    padding-bottom: 10px;
+}
+
+.button-view {
+    border: 2px solid #7DBFC8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1E646E;
+    padding: 4px;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    width: 60px;
+}
+
+.data-container {
+    background-color: #7DBFC8;
+}
+
+.error-msg {
+    font-family: "RobotoMonoRegular";
+    color: #FFFFFF;
+    text-align: center;
+}
+
+.view {
+    padding: 4px;
+}
+
+.data-container {
+    background-color: #F3A3A7;
+    width: 50%;
+    border-radius: 4px;
+    justify-self: center;
+    justify-items: center;
+    padding: 4px;
+}
+
+.data-summary {
+    padding-top: 12px;
+}
+
+.data-summary-container {
+    background-color: #7DBFC8;
+    width: 90%;
+    justify-self: center;
+    border-radius: 4px;
+    padding: 6px;
+}
+
+.data-summary-info {
+    color: #FFFFFF;
+    font-family: "RobotoMonoRegular";
+    font-size: 14px;
+}
+
+.raw-data {
+    color: #FFFFFF;
+    font-size: 16px;
+}
+
+.raw-data-container {
+    background-color: #7DBFC8;
+    border-radius: 4px;
+    padding: 6px;
+    justify-self: center;
+}

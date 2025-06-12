@@ -3,8 +3,15 @@ import './TasksCopilot.css'
 import TecXotic from '../../../assets/TecXotic.svg'
 import Icon from '../../../assets/Icon.svg'
 import DNA from "../eDNA/DNA";
+import pilot from "../../../assets/pilot.svg"
+import { useNavigate } from "react-router-dom";
 
 const TasksCopilot = ({ option, setOption }) => {
+    const navigate = useNavigate()
+
+    const pilotView = () => {
+        navigate('/')
+    }
     return (
         <>
             <div className='navbar-background'>
@@ -23,6 +30,10 @@ const TasksCopilot = ({ option, setOption }) => {
                         onClick={() => setOption(3)}>CARP TRACK</button>
                 </div>
                 <div className='icons'>
+                    <button className='button-text-icon' onClick={pilotView}>
+                        <p>Pilot View</p>
+                        <img className='copilot-icon' src={pilot}/>
+                    </button>
                     <img src={TecXotic}></img>
                     <img src={Icon}></img>
                 </div>

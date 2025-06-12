@@ -85,6 +85,11 @@
   justify-content: center;
   margin-right: 20px;
 }
+
+.copilot-icon {
+  filter: brightness(0) invert(100%);
+  width: 24px;
+}
 .brightness-wrapper {
   position: relative;
   padding: 20px;
@@ -105,6 +110,20 @@
   font-size: 14px;
 }
 
+.button-text-icon{
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  background-color: #7DBFC8;
+  border: None;
+  padding: 10px;
+  font-weight: bold;
+  color: white;
+  border-radius: 8px;
+  filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.30));
+  cursor: pointer;
+}
 @media (max-width: 500px) {
   .icons {
     display: None;

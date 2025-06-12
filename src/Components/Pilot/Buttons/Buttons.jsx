@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import Icon from "../../../assets/Icon.svg";
 import TecXotic from "../../../assets/TecXotic.svg";
 import STARTMEASURING from "../../../assets/startMeasuring.svg";
+import copilot from "../../../assets/copilot.svg"
 import "./buttons.css";
+import { useNavigate } from "react-router-dom";
 const Buttons = ({
   option,
   setOption,
@@ -14,6 +16,13 @@ const Buttons = ({
   const [speed, setSpeed] = useState(100);
   const [alpha, setAlpha] = useState(60);
   const [beta, setBeta] = useState(60);
+
+  const navigate = useNavigate();
+
+  const copilotView = () => {
+    navigate('/Copilot')
+  }
+
   return (
     <>
       <div className="navbar-background">
@@ -32,6 +41,10 @@ const Buttons = ({
           </button>
         </div>
         <div className="icons">
+          <button className='button-text-icon' onClick={copilotView}>
+            <p>Copilot View</p>
+                <img className='copilot-icon' src={copilot}/>
+          </button>
           <img src={TecXotic}></img>
           <img src={Icon}></img>
         </div>
