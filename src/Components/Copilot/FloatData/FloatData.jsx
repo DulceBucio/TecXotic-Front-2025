@@ -253,7 +253,7 @@ const FloatData = () => {
                   borderRadius: '4px',
                   border: '2px dashed #dee2e6'
                 }}>
-                  <p style={{ color: '#ffffff', fontSize: '18px' }}>
+                  <p className='graph-msg'>
                     {loading ? 'Loading data...' : 'No sensor data available'}
                   </p>
                 </div>

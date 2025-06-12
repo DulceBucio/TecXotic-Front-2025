@@ -1,46 +1,75 @@
-import './DNA.css'
-import { useState } from 'react'
+import './DNA.css';
+import React, { useState } from 'react';
+import { copilot_address } from '../../Constants';
 
 const DNA = () => {
-    // const [upload, setUpload] = useState()
-    const [enterText, setEnterText] = useState(false)
-     return(
-        <>
-        <div className='container'>
-            <div className='buttons-container'>
-                <button className='action-button'>Upload foto</button>
-                <button className='action-button'>Take foto</button>
-                <button className='action-button' onClick={() => setEnterText(prev => !prev)}>Enter text</button>
-            </div>
-            <div className='action-container'>
-                {enterText && (
-                    <div className='input-row'>
-                        <textarea
-                        type="text"
-                        placeholder="DNA Sequence"
-                        className="text-input"
-                        ></textarea>
-                        <button className='send-button'>Analyze</button>
-                    </div>
-                )}
-            </div>
-            <div className='results'>
-                <div className='result-container'>
-                    <h3> Most accurate match: </h3>
-                    <div className='result-background'>
-                        <h3> VALUE </h3>
-                    </div>
-                </div>
-                <div className='accuracy-container'>
-                    <h3> By: </h3>
-                    <div className='result-background'>
-                        <h3> VALUE % </h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </>
-    )
-}
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [specie, setSpecie] = useState(null);
+  const [similarity, setSimilarity] = useState(null)
 
-export default DNA
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    setLoading(true);
+    try {
+      const result = await fetch(`${copilot_address}/DNA`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await result.json();
+      console.log(data);
+      setSpecie(data.specimen)
+      setSimilarity(data.similarity)
+    } catch (error) {
+      console.error('Upload failed:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetFields = () => {
+    setSpecie(null)
+    setSimilarity(null)
+  }
+
+  return (
+    <div className="container">
+      <div className="buttons-container">
+        <input id="file" type="file" className='input-file'onChange={handleFileChange} />
+        {file && (
+          <button className="action-button" onClick={handleUpload} disabled={loading}>
+            {loading ? 'Uploading...' : 'Get specie'}
+          </button>
+        )}
+        <p className='reset-btn' onClick={resetFields}>Clear fields</p>
+      </div>
+      <div className="results">
+        <div className="result-container">
+          <h3> Most accurate match: </h3>
+          <div className="result-background">
+            <h3> {specie} </h3>
+          </div>
+        </div>
+        <div className="accuracy-container">
+          <h3> By: </h3>
+          <div className="result-background">
+          <h3>{similarity !== null ? `${similarity}%` : '—'}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DNA;

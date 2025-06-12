@@ -39,6 +39,10 @@ h1 {
     width: 60px;
 }
 
+.button-view:hover {
+    background-color: rgb(141, 239, 239);
+}
+
 .data-container {
     background-color: #7DBFC8;
 }
@@ -53,6 +57,11 @@ h1 {
     padding: 4px;
 }
 
+.graph-msg { 
+    color: '#000000';
+    fontSize: '18px' ;
+    font-family: "RobotoMonoRegular";
+}
 .data-container {
     background-color: #F3A3A7;
     width: 50%;
