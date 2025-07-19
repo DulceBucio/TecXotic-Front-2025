@@ -11,7 +11,7 @@ export default function CopilotContainer() {
                 <NavBar copilot={true}/>
                 <div className="content">
                     <div className="cameras-container">
-                        <Camera />
+                        <Camera copilot={true}/>
                     </div>
                     <div className="float-data">
                         <FloatData />

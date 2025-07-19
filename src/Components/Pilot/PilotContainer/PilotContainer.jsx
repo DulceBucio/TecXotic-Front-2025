@@ -6,7 +6,7 @@ import "./PilotContainer.css";
 import React, { useState, useEffect, useRef } from "react";
 import { socket_address, flask_address } from "../../Constants";
 
-const RANGE = 900,
+const RANGE = 1000,
   NEUTRAL = 0;
 const THROTTLE_RANGE = 500,
   NEUTRAL_THROTTLE = 500;
@@ -109,8 +109,7 @@ const PilotContainer = (props) => {
       }
     } catch (error) {
       console.error("Error in post_brightness_alpha:", error);
-    } finally {
-    }
+    } 
   };
 
   const post_brightness_beta = async (beta) => {
@@ -128,8 +127,7 @@ const PilotContainer = (props) => {
       }
     } catch (error) {
       console.error("Error in post_brightness_beta:", error);
-    } finally {
-    }
+    } 
   };
 
   let yawInput = 0;
@@ -197,10 +195,10 @@ const PilotContainer = (props) => {
         let yawInput = 0;
 
         // Simple digital bumpers
-        if (controller.buttons[4].pressed) {
+        if (controller.buttons[5].pressed) {
           yawInput += 1;
         }
-        if (controller.buttons[5].pressed) {
+        if (controller.buttons[4].pressed) {
           yawInput -= 1;
         }
 
@@ -241,6 +239,20 @@ const PilotContainer = (props) => {
             post_commands_instance("RIGHTROLL");
           } catch (error) {
             console.error("Error in post_commands_instance:", error);
+          }
+        } else if (controller.buttons[9].pressed) {
+          stoppedRef.current = false; 
+          try {
+            post_commands_instance("ARM_OPEN");
+          } catch (error) {
+            console.error("a");
+          }
+        } else if (controller.buttons[8].pressed) {
+          stoppedRef.current = false;
+          try {
+            post_commands_instance("ARM_CLOSE");
+          } catch (error) {
+            console.error("a");
           }
         } else {
           if (!stoppedRef.current) {
@@ -309,7 +321,7 @@ const PilotContainer = (props) => {
         getAlphaValue={getAlphaValue}
         getBetaValue={getBetaValue}
       />
-      <Camera />
+      <Camera pilot={true}/>
       <BottomNavBar
         rotation={rotation}
         roll={rotation}

@@ -3,6 +3,7 @@ import './TasksCopilot.css'
 import TecXotic from '../../../assets/TecXotic.svg'
 import Icon from '../../../assets/Icon.svg'
 import DNA from "../eDNA/DNA";
+import MeasureTask from "../MeasureTask/MeasureTask";
 import pilot from "../../../assets/pilot.svg"
 import { useNavigate } from "react-router-dom";
 
@@ -41,7 +42,7 @@ const TasksCopilot = ({ option, setOption }) => {
             <div className='settings-background'>
                 {option === 0 && 
                 <div className="task-container">
-                    <p>a</p>
+                    <MeasureTask />
                 </div>
                 }
                 {option === 1 && 
